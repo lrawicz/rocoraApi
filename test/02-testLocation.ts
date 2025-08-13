@@ -1,4 +1,4 @@
-//test building.ts
+//test location
 import request from "supertest";
 import  app  from "../src/app"; // Adjust the path to your app file
 import config from "../src/config/config";
