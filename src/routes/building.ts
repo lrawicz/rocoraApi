@@ -53,7 +53,7 @@ const buildingRouter = Router();
  *               items:
  *                 $ref: '#/components/schemas/Building'
  */
-buildingRouter.get("/", BuildingController.getAllBuildings);
+buildingRouter.get("/", BuildingController.getAll);
 
 /**
  * @swagger
@@ -82,7 +82,7 @@ buildingRouter.get("/", BuildingController.getAllBuildings);
  *             schema:
  *               $ref: '#/components/schemas/Error'
  */
-buildingRouter.get("/:id", BuildingController.getBuildingById);
+buildingRouter.get("/:id", BuildingController.getById);
 
 /**
  * @swagger
@@ -117,7 +117,7 @@ buildingRouter.get("/:id", BuildingController.getBuildingById);
  *       500:
  *         description: Error del servidor
  */
-buildingRouter.post("/", apiKeyAuth, BuildingController.createBuilding);
+buildingRouter.post("/", apiKeyAuth, BuildingController.create);
 
 /**
  * @swagger
@@ -155,7 +155,7 @@ buildingRouter.post("/", apiKeyAuth, BuildingController.createBuilding);
  *       404:
  *         description: El edificio no fue encontrado
  */
-buildingRouter.put("/:id", apiKeyAuth, BuildingController.updateBuilding);
+buildingRouter.put("/:id", apiKeyAuth, BuildingController.update);
 
 /**
  * @swagger
@@ -178,6 +178,6 @@ buildingRouter.put("/:id", apiKeyAuth, BuildingController.updateBuilding);
  *       404:
  *         description: El edificio no fue encontrado
  */
-buildingRouter.delete("/:id", apiKeyAuth, BuildingController.deleteBuilding);
+buildingRouter.delete("/:id", apiKeyAuth, BuildingController.delete);
 
 export { buildingRouter };

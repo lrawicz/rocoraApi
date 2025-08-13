@@ -4,10 +4,11 @@ import { LocationController } from "../controllers/locationController";
 
 const locationRouter = Router();
 
-locationRouter.get("/", LocationController.getAllLocations);
-locationRouter.get("/:name", LocationController.getLocationByName);
-locationRouter.post("/", LocationController.createLocation);
-locationRouter.put("/:name", LocationController.updateLocation);
-locationRouter.delete("/:name", LocationController.deleteLocation);
+locationRouter.get("/", LocationController.getAll);
+locationRouter.get("/getByName/:name", LocationController.getByName);
+locationRouter.get("/:id", LocationController.getById);
+locationRouter.post("/", LocationController.create);
+locationRouter.put("/:id", LocationController.update);
+locationRouter.delete("/:id", LocationController.delete);
 
 export { locationRouter };
