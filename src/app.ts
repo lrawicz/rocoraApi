@@ -1,7 +1,7 @@
 import express, { Request, Response } from "express";
 import cors from "cors";
 import dotenv from "dotenv";
-import { indexRouter } from "./routes/index";
+import { router } from "./routes";
 import swaggerUi from 'swagger-ui-express';
 import { swaggerSpec } from './swagger';
 dotenv.config();
@@ -13,14 +13,11 @@ app.use(express.json());
 
 // Ruta para la documentación de Swagger
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+// add router
+app.use("/api", router);
 
-
-// add index router
-app.use("/api", indexRouter);
-const PORT = process.env.PORT;
-
-app.get("/", (request: Request, response: Response) => { 
-  response.status(200).send("Hello World");
+app.get("/status", (request: Request, response: Response) => { 
+  response.status(200).send("OK");
 }); 
 
 
