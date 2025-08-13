@@ -4,6 +4,7 @@ import { Contract } from "./entity/contract";
 import { Payment } from "./entity/payment";
 import dotenv from "dotenv";
 import { Location } from "./entity/location";
+import { Debt } from "./entity/debt";
 dotenv.config();
 
 export const AppDataSource = new DataSource({
@@ -17,7 +18,7 @@ export const AppDataSource = new DataSource({
     synchronize: true,
     logging: true,
     entities: [Building, Location,
-        Contract, Payment, 
+        Contract, Payment, Debt
     ],
     subscribers: [],
     migrations: [],
