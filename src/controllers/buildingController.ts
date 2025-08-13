@@ -1,9 +1,9 @@
-//location controller
+//building controller
 import { Request, Response } from "express";
 import { Building } from "../entity/building";
 
 export class BuildingController {
-    static async getAllBuildings(req: Request, res: Response) {
+    static async getAll(req: Request, res: Response) {
         try {
             const locations = await Building.find();
             res.json(locations);
@@ -12,7 +12,7 @@ export class BuildingController {
         }
     }
 
-    static async createBuilding(req: Request, res: Response) {
+    static async create(req: Request, res: Response) {
         const { direction } = req.body;
         try {
             const newLocation = Building.create({direction});
@@ -22,7 +22,7 @@ export class BuildingController {
             res.status(500).json({ message: "Error creating location" });
         }
     }
-    static async getBuildingById(req: Request, res: Response) {
+    static async getById(req: Request, res: Response) {
         const  id:number|undefined = Number(req.params.id)|| undefined;
         console.log("Requested Building ID:", id); // Debugging line
         if (!id) return res.status(400).json({ message: "Invalid building ID" });
@@ -35,7 +35,7 @@ export class BuildingController {
         }
     }
 
-    static async updateBuilding(req: Request, res: Response) {
+    static async update(req: Request, res: Response) {
         const  id:number|undefined = Number(req.params.id)|| undefined;
         if (!id) return res.status(400).json({ message: "Invalid building ID" });
 
@@ -50,7 +50,7 @@ export class BuildingController {
         }
     }
 
-    static async deleteBuilding(req: Request, res: Response) {
+    static async delete(req: Request, res: Response) {
         const  id:number|undefined = Number(req.params.id)|| undefined;
         if (!id) return res.status(400).json({ message: "Invalid building ID" });
 
