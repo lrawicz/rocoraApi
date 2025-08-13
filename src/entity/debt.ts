@@ -7,7 +7,7 @@ export class Debt extends BaseEntity {
     id: number
 
     @Column()
-    serviceName: "AYSA"|"EDESUR"|"EPEC"|"Metrogas"|"Telecom"|"Otro"
+    serviceName: "AYSA"|"EDESUR"|"Metrogas"|"AGIP"|"Otro"
     
     @ManyToMany(() => Location, 
       location =>  location.debts, //optional
@@ -27,18 +27,21 @@ export class Debt extends BaseEntity {
     locations?: Location[];
 
     @Column()
-    amount: number
+    debt: number
 
     @Column()
     dueDate: Date
 
     @Column()
-    status: "PENDING"|"PAID"|"OVERDUE"
+    status: "PENDING"|"PAID"|"OVERPAID"
 
-    @Column()
+    @Column('jsonb', { nullable: false, default: [] })
     amountPaid: number
 
     @Column()
-    paymentDate: Date
+    totalAmountPayed: number
+
+    @Column('jsonb', { nullable: false, default: [] })
+    tickets: JSON
 
 }

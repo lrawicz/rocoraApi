@@ -2,30 +2,38 @@ import { Entity, PrimaryGeneratedColumn, Column, BaseEntity, ManyToOne, OneToMan
 import { Location } from "./location"
 import { Payment } from "./payment"
 
+export type taskAmount = {
+    amount: number,
+    startDate: Date,
+    months: number,
+}
+
 @Entity()
 export class Contract extends BaseEntity {
     @PrimaryGeneratedColumn()
     id: number
 
-    @Column()
+    @Column({nullable: false})
     tenant: string
 
-    @Column()
+    @Column({nullable: false})
     tenantDNI: number
 
-    @Column()
+    @Column({nullable: false})
     startDate: Date
 
-    @Column()
+    @Column({nullable: false})
     endDate: Date
 
-    @Column('jsonb', { nullable: false, default: {} })
-    amount: string;
+    @Column('jsonb', { nullable: false, default: [] })
+    sheduleAmount: taskAmount[];
+
     @ManyToOne(type => Location, location => location.contracts) location: Location; 
- 
+
     @OneToMany(type => Payment, payment => payment.contract, 
         ) payments: Payment[];
     
-    @Column()
+
+    @Column({nullable: true, default: "ACTIVE"})
     status: string
 }
