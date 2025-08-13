@@ -1,4 +1,4 @@
-//test building.ts
+//test building
 import request from "supertest";
 import  app  from "../src/app"; // Adjust the path to your app file
 import config from "../src/config/config";
@@ -43,7 +43,6 @@ describe("Building API", () => {
         expect(createResponse.status).toBe(201);
         expect(createResponse.body.direction).toBe("123 Main St");
     });
-
     it("should get all buildings", async () => {
         const getAllResponse = await request(app).get("/api/building");
         expect(getAllResponse.status).toBe(200);
