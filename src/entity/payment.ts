@@ -7,7 +7,7 @@ export class Payment extends BaseEntity {
     id: number
 
     @Column()
-    fecha: Date
+    date: Date
     
     @Column()
     amount: number
