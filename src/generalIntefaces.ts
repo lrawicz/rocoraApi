@@ -11,8 +11,9 @@ export type ErrorType = {
 
 export type parameterOption = {
     columnName:string,
-    typeOf:"string"|"number"|"boolean"|"date",
+    typeOf:"string"|"number"|"boolean"|"date"|"entity",
     criteria:{
+        in?:number[],
         min?:number|Date;
         minOrEqual?:number|Date;
         max?:number|Date;

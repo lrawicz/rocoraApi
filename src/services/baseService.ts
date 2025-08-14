@@ -1,6 +1,6 @@
 //base Service
 import { ErrorType, optionsGetAll, Pagination, parameterOption } from "../generalIntefaces";
-import {  LessThan, LessThanOrEqual, Like, MoreThan,MoreThanOrEqual,And, FindOperator, BaseEntity, Equal} from "typeorm";
+import {  LessThan, LessThanOrEqual, Like, MoreThan,MoreThanOrEqual,And, FindOperator, BaseEntity, Equal, In} from "typeorm";
 
 export class baseService<T extends BaseEntity> {
     entity:typeof BaseEntity;
@@ -22,6 +22,7 @@ export class baseService<T extends BaseEntity> {
             };
             try {
                 const options:any = {}
+                const relations:any = {}
                 options.skip = (filter.page - 1) * filter.limit
                 options.take = filter.limit
                 options.where = {}
@@ -39,6 +40,10 @@ export class baseService<T extends BaseEntity> {
                                 if("minOrEqual" in param.criteria) tmp.push(LessThanOrEqual(param.criteria.min))
                                 if("value" in param.criteria) tmp.push(Equal(param.criteria.min))
                                 options.where[param.columnName]= And(...tmp)
+                            break
+                            case "entity":
+                                options.where[param.columnName]= {id:In(param.criteria.in)}
+                                relations[param.columnName] = true
                             break
                         }
                     }
