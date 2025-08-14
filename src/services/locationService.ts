@@ -1,75 +1,56 @@
 //building Service
 import { Building } from "../entity/building";
 import { Location, locationStatus } from "../entity/location";
+import { ErrorType  } from "../generalIntefaces";
+import { baseService } from "./baseService";
 export type locationData ={
         name:string,
         buildingId:number,
         status:locationStatus,
         additionalInfo?:string
 }
-export class LocationService {
-    static async getAll(page: number, limit:number): Promise<Location[]> {
-        return await Location.find({
-            skip: (page - 1) * limit,
-            take: limit
-        });
+class LocationService extends baseService<Location>{
+    constructor(){
+        super(Location)
     }
-
-    static async create(data: locationData): Promise<Location|null> {
-        return Building.findOneOrFail({where:{id:data.buildingId}})
-            .then(building => {
-                const newLocation = Location.create({ ...data, building });
-                return newLocation.save();
-            })
-            .catch(error => {
-                console.log(error);
-                return null;
-            });
-    }
-
-    static async getById(id: number): Promise<Location | null> {
-        try {
-            return await Location.findOneOrFail({ where: { id } });
-        } catch (error) {
-            console.log(error)
-            return null;
+    public async create(data:locationData): Promise<Location|ErrorType> {
+        const building:Building|null = await Building.findOne({where:{id:data.buildingId}})
+        if(!building){
+            const result:ErrorType = {
+                message: "Building not found",
+                statusCode: 404
+            };
+            return result;
         }
-    }
-    static async getByName(name: string): Promise<Location | null> {
-        try {
-            return await Location.findOneOrFail({ where: { name } });
-        } catch (error) {
-            console.log(error)
-            return null;
-        }
+        delete data.buildingId
+        return await super.create({...data,building})  
     }
 
-    static async update(id: number, data:locationData): Promise<Location | null> {
-        return Location.findOneOrFail({ where: { id } })
-        .then(async (location) => {
-            if (data.name) location.name = data.name;
-            if (data.status) location.status = data.status;
-            if (data.additionalInfo) location.additionalInfo = data.additionalInfo;
-            if (data.buildingId){
-                const building = await Building.findOneOrFail({ where: { id: data.buildingId } });
-                location.building = building;
+    public async getByName(name: string): Promise<Location | ErrorType> {
+        return await Location.findOneOrFail({ where: { name } })
+        .catch(error => {
+            const result:ErrorType = {message: "Error getting location",statusCode: 500};
+            console.log(result.message,error);
+            return result;
+        })
+    }
+    
+    public async update(id: number, data:Partial<locationData>): Promise<Location | ErrorType> {
+        const dataToUpdate:Partial<Location> = {}
+        if(data.buildingId){
+            const building = await Building.findOne({ where: { id: data.buildingId } });
+            if(!building){
+                const result:ErrorType = {message: "Building not found",statusCode: 404};
+                console.log(result.message);
+                return result;
             }
-            return await location.save();
-        }).catch(error => {
-            console.log(error);
-            return null;
-        });
-
+            delete data.buildingId;
+            dataToUpdate.building = building;
+        }
+        Object.assign(dataToUpdate,data)
+        return super.update(id,dataToUpdate)
     }
 
-    static async delete(id: number): Promise<boolean> {
-        return Location.findOneOrFail({ where: { id } })
-            .then(async (location) => {
-                await location.remove();
-                return true;
-            }).catch(error => {
-                console.log(error);
-                return false;
-            });
-    }
 }
+
+export const locationService = new LocationService()

@@ -1,113 +1,115 @@
 //contract controller
 import { Request, Response } from "express";
-import { Contract, taskAmount } from "../entity/contract";
+import { Contract, contractStatus, taskAmount } from "../entity/contract";
 import { Location } from "../entity/location";
-import { MoreThanOrEqual } from "typeorm";
-
+import { In, MoreThanOrEqual } from "typeorm";
+import { contractData,  contractService } from "../services/contractService";
+import { ErrorType, Pagination } from "../generalIntefaces";
 export class ContractController {
     static async getAll(req: Request, res: Response) {
-    try {
-        const contracts:Contract[] = await Contract.find({relations: {location: true} });
-        res.json(contracts);
+        try {
+            let page = req.query.page? Number(req.query.page) : 1;
+            let limit = req.query.limit? Number(req.query.limit) : 10;
+            if(page<1) page=1;
+            if(limit<1) limit=10;
+            const options = req.query.options? JSON.parse(req.query.options as string) : undefined;
+            const result:Pagination<Contract>|ErrorType = await contractService.getAll({page,limit});
+            if('statusCode' in result) return res.status(result.statusCode).json({ message: result.message});
+            return res.json(result);
         } catch (error) {
-            res.status(500).json({ message: "Error fetching contracts" });
+            console.log(error)
+            res.status(500).json({ message: "Error fetching locations" });
         }
     }
-
+    
     static async create(req: Request, res: Response) {
-        const locationId:number|undefined= Number(req.body.locationId)||undefined
-        if(locationId===undefined) return res.status(400).json({ message: "Invalid location ID" });
-
-        const tenant:string|null = req.body.tenant? req.body.tenant : null
-        const tenantDNI:number|null = Number(req.body.tenantDNI)||null
-        const startDate:Date|null = req.body.startDate? req.body.startDate : null
-        const endDate:Date|null  = req.body.endDate? req.body.endDate : null
-        const sheduleAmount:taskAmount[]|null = req.body.sheduleAmount ? req.body.sheduleAmount : null
-        const status:string|null  = req.body.status? req.body.status : null
-        
-        Location.findOneOrFail({where:{id:locationId}})
-            .then(location => {
-                const newContract = Contract.create({ tenant, tenantDNI, startDate, endDate, sheduleAmount, location:location, status });
-                return newContract.save();
-            })
-            .then(savedContract => res.status(201).json(savedContract))
-            .catch(error => {
-                console.log(error);
-                res.status(500).json({ message: "Error creating contract" });
-            });
+        const data:contractData = req.body? req.body as contractData : undefined;
+        if(!data) return res.status(400).json({ message: "Invalid data" });
+        const result:Contract|ErrorType = await contractService.create(data);
+        if('statusCode' in result) return res.status(result.statusCode).json({ message: result.message});
+        return res.status(201).json(result);
     }
     static async getById(req: Request, res: Response) {
         const  id:number|undefined = Number(req.params.id)|| undefined;
         if (!id) return res.status(400).json({ message: "Invalid contract ID" });
-        Contract.findOneOrFail({ where: { id },relations: {location: true} }).then(contract => {
-            return res.status(200).json(contract)
-        }).catch(error => {
-            res.status(404).json({ message: "Contract not found" });
-        });
+        const result:Contract|ErrorType = await contractService.getById(id)
+        if('statusCode' in result) return res.status(result.statusCode).json({ message: result.message});
+        return res.status(200).json(result);
     }
 
     static async getByLocationId(req: Request, res: Response) {
         const id:number|undefined = Number(req.params.id)|| undefined;
         const startDate:Date|undefined = req.query.startDate ? new Date(req.query.startDate as string) : undefined;
         if (!id) return res.status(400).json({ message: "Invalid location Id" });
-        Location.findOneOrFail({ where: { id } }).then(location => {
-            // if (startDate) {
-            //     return Contract.find({ where: { location, startDate:MoreThanOrEqual(startDate)}})
-            //         .then(contracts => res.status(200).json(contracts))
-            //         .catch(error => res.status(404).json({ message: "Contracts not found for this location" }));
-            // }
-            return Contract.find({ where: { location } })
-                .then(contracts => res.status(200).json(contracts))
-                .catch(error => res.status(404).json({ message: "Contracts not found for this location" }));
-        }).catch(error => {
-            console.log(error);
-            res.status(404).json({ message: "Location not found" });
-        });
+        const result:Contract[]|ErrorType = await contractService.getByLocationId(id)
+        if('statusCode' in result) return res.status(result.statusCode).json({ message: result.message});
+        return res.status(200).json(result);
     }
     static async update(req: Request, res: Response) {
         const id:number|undefined = Number(req.params.id)|| undefined;
         if (!id) return res.status(400).json({ message: "Invalid contract ID" });
-        const tenant:string|undefined = req.body.tenant? req.body.tenant : undefined
-        const tenantDNI:number|undefined = Number(req.body.tenantDNI)||undefined
-        const startDate:Date|undefined = req.body.startDate? req.body.startDate : undefined
-        const endDate:Date|undefined  = req.body.endDate? req.body.endDate : undefined
-        const sheduleAmount:taskAmount[]|undefined = req.body.sheduleAmount? req.body.sheduleAmount : undefined
-        const status:string|undefined  = req.body.status ? req.body.status : undefined
-        const locationId:number|undefined= Number(req.body.locationId)||undefined
-        Contract.findOneOrFail({ where: { id } })
-        .then(async (contract) => {
-            if (tenant) contract.tenant =  tenant;
-            if (tenantDNI) contract.tenantDNI =  tenantDNI;
-            if (startDate) contract.startDate =  startDate;
-            if (endDate) contract.endDate =  endDate
-            if (sheduleAmount) contract.sheduleAmount =  sheduleAmount;
-            if (locationId) {
-                const location = await Location.findOneOrFail({ where: { id: locationId } });
-                contract.location = location;
-            }
-            if (status) contract.status = status;
-            await contract.save();
-            res.json(contract);
-        }).catch(error => {
-            res.status(404).json({ message: "Contract not found" });
-        });
+        const data:Partial<contractData> = req.body? req.body as contractData : undefined;
+        let result:Contract|ErrorType = await contractService.update(id,data)
+        if('statusCode' in result) return res.status(result.statusCode).json({ message: result.message});
+        return res.status(200).json(result);
     }
     static async delete(req: Request, res: Response) {
-        const  id:number|undefined = Number(req.params.id) || undefined;
+        const  id:number|undefined = Number(req.params.id)|| undefined;
         if (!id) return res.status(400).json({ message: "Invalid contract ID" });
-        await Contract.
-            findOneOrFail({ where: { id } })
-            .then(async(contract) => {
-            if (!contract) return res.status(404).json({ message: "Contract not found" });
-
-            await contract.remove().then(() => {
-                res.status(204).send();
-            }).catch(error => {
-                res.status(500).json({ message: "Error deleting location" });
-            });
-        })
-
+        const result:boolean|ErrorType = await contractService.delete(id)
+        if( typeof result !== "boolean") return res.status(result.statusCode).json({ message: result.message});
+        return res.status(200).json(result);
     }
+
+    static async getActiveContracts(req: Request, res: Response) {
+        try {
+            let locationsName = req.query.locationsName as string[] || [];
+            const where:any = { status: "ACTIVE" }
+            if (locationsName.length !== 0) where['location'] = { name:  In(locationsName) };
+            const contracts = await Contract.find({ where, relations: { location: true } });
+            res.json(contracts);
+        } catch (error) {
+            res.status(500).json({ message: "Error fetching active contracts" });
+        }
+    }
+    
+    static async getTotalDebt(req: Request, res: Response) {
+        const id:number|undefined = Number(req.params.id)|| undefined;
+        if (!id) return res.status(400).json({ message: "Invalid contract ID" });
+        const date:Date = req.query.date ? new Date(req.query.date as string) : new Date();
+        try {
+            const contract = await Contract.findOneOrFail({ where: { id }, relations: { payments: true } });
+            const totalDebt = contract.sheduleAmount
+                                .map((task: taskAmount) => 
+                                {
+                                    let result = [] as taskAmount[];
+                                    if(task.months<=0) return [];
+                                    if(task.months===1) return [task];
+                                    //expand task into multiple tasks of 1 month each
+                                    for (let index = 0; index < task.months-1; index++) {
+                                        let newTask:taskAmount = {
+                                            amount:task.amount,
+                                            startDate:new Date(task.startDate.getFullYear(), task.startDate.getMonth()+index, task.startDate.getDate()),
+                                            months:1
+                                        }
+                                        result.push(newTask);
+                                    }
+                                    return result;
+                                })
+                                .flat()
+                                .filter((task) => task.startDate <= (date))
+                                .reduce((total, payment) => total + payment.amount, 0) || 0;
+            const totalPaid = contract.payments
+                                .filter(payment => payment.date <= date)
+                                .reduce((total, payment) => total + payment.amount, 0);
+            const debt = totalDebt - totalPaid;
+            res.json({ totalDebt: debt });
+        } catch (error) {
+            res.status(500).json({ message: "Error calculating total debt" });
+        }
+    }
+    
+
 }
 
 export default ContractController;

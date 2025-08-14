@@ -7,6 +7,7 @@ export type taskAmount = {
     startDate: Date,
     months: number,
 }
+export type contractStatus = "ACTIVE" | "INACTIVE" | "CANCELLED";
 
 @Entity()
 export class Contract extends BaseEntity {
@@ -28,12 +29,13 @@ export class Contract extends BaseEntity {
     @Column('jsonb', { nullable: false, default: [] })
     sheduleAmount: taskAmount[];
 
+    @Column({nullable: true, default: "ACTIVE",enum:["ACTIVE","INACTIVE","CANCELLED"] })
+    status: contractStatus;
+
     @ManyToOne(type => Location, location => location.contracts) location: Location; 
 
     @OneToMany(type => Payment, payment => payment.contract, 
         ) payments: Payment[];
     
 
-    @Column({nullable: true, default: "ACTIVE"})
-    status: string
 }
