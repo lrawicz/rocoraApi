@@ -10,5 +10,6 @@ contractRouter.get("/:id", ContractController.getById);
 contractRouter.post("/", ContractController.create);
 contractRouter.put("/:id", ContractController.update);
 contractRouter.delete("/:id", ContractController.delete);
+contractRouter.get("/getTotalDebt/:id", ContractController.getTotalDebt);
 
 export { contractRouter };

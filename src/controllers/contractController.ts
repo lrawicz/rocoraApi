@@ -1,8 +1,7 @@
 //contract controller
 import { Request, Response } from "express";
-import { Contract, contractStatus, taskAmount } from "../entity/contract";
-import { Location } from "../entity/location";
-import { In, MoreThanOrEqual } from "typeorm";
+import { Contract } from "../entity/contract";
+import { In } from "typeorm";
 import { contractData,  contractService } from "../services/contractService";
 import { ErrorType, Pagination } from "../generalIntefaces";
 export class ContractController {
@@ -67,46 +66,19 @@ export class ContractController {
             const where:any = { status: "ACTIVE" }
             if (locationsName.length !== 0) where['location'] = { name:  In(locationsName) };
             const contracts = await Contract.find({ where, relations: { location: true } });
-            res.json(contracts);
+            return res.json(contracts);
         } catch (error) {
             res.status(500).json({ message: "Error fetching active contracts" });
         }
     }
     
     static async getTotalDebt(req: Request, res: Response) {
-        const id:number|undefined = Number(req.params.id)|| undefined;
-        if (!id) return res.status(400).json({ message: "Invalid contract ID" });
+        const contractId:number|undefined = Number(req.params.id)|| undefined;
+        if (!contractId) return res.status(400).json({ message: "Invalid contract ID" });
         const date:Date = req.query.date ? new Date(req.query.date as string) : new Date();
-        try {
-            const contract = await Contract.findOneOrFail({ where: { id }, relations: { payments: true } });
-            const totalDebt = contract.sheduleAmount
-                                .map((task: taskAmount) => 
-                                {
-                                    let result = [] as taskAmount[];
-                                    if(task.months<=0) return [];
-                                    if(task.months===1) return [task];
-                                    //expand task into multiple tasks of 1 month each
-                                    for (let index = 0; index < task.months-1; index++) {
-                                        let newTask:taskAmount = {
-                                            amount:task.amount,
-                                            startDate:new Date(task.startDate.getFullYear(), task.startDate.getMonth()+index, task.startDate.getDate()),
-                                            months:1
-                                        }
-                                        result.push(newTask);
-                                    }
-                                    return result;
-                                })
-                                .flat()
-                                .filter((task) => task.startDate <= (date))
-                                .reduce((total, payment) => total + payment.amount, 0) || 0;
-            const totalPaid = contract.payments
-                                .filter(payment => payment.date <= date)
-                                .reduce((total, payment) => total + payment.amount, 0);
-            const debt = totalDebt - totalPaid;
-            res.json({ totalDebt: debt });
-        } catch (error) {
-            res.status(500).json({ message: "Error calculating total debt" });
-        }
+        const result:{totalDebt:number}|ErrorType = await contractService.getTotalDebt(contractId,date)
+        if('statusCode' in result)  return res.status(result.statusCode).json({ message: result.message });
+        return res.json(result);
     }
     
 

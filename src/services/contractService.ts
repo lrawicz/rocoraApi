@@ -2,6 +2,7 @@
 
 import { Contract, contractStatus, taskAmount } from "../entity/contract";
 import { Location } from "../entity/location";
+import { Payment } from "../entity/payment";
 import { ErrorType} from "../generalIntefaces";
 import { baseService } from "./baseService";
 export type contractData ={
@@ -57,10 +58,17 @@ class ContractService extends baseService<Contract>{
             })
     }
 
-    static async getTotalDebt(id:number, date:Date):Promise<number|ErrorType> {
-        let result:number|ErrorType;
+    public async getTotalDebt(locationId:number, date:Date):Promise<{totalDebt:number}|ErrorType> {
+        let result:{totalDebt:number}|ErrorType;
         try {
-            const contract = await Contract.findOneOrFail({ where: { id }, relations: { payments: true } });
+            const contract = await Contract.findOne({ where: { location:{id:locationId} }, relations: { location: true } });
+            if(!contract)
+                return { message: "Contract not found",statusCode: 404};
+
+            const payments = await Payment.find({ where: { contract: { id: contract.id } } });
+
+            if(!payments)
+                return { message: "Payments not found",statusCode: 404};
             const totalDebt = contract.sheduleAmount
                 .map((task: taskAmount) => {
                     let result = [] as taskAmount[];
@@ -68,7 +76,7 @@ class ContractService extends baseService<Contract>{
                     if(task.months===1) return [task];
                     //expand task into multiple tasks of 1 month each
                     for (let index = 0; index < task.months-1; index++) {
-                        let newTask:taskAmount = {amount:task.amount,startDate:task.startDate,months:1}
+                        const newTask:taskAmount = {amount:task.amount,startDate:new Date(task.startDate),months:1}
                         newTask.startDate.setMonth(newTask.startDate.getMonth()+index);
                         result.push(newTask);
                     }
@@ -77,10 +85,10 @@ class ContractService extends baseService<Contract>{
                 .flat()
                 .filter((task) => task.startDate <= (date))
                 .reduce((total, payment) => total + payment.amount, 0) || 0;
-            const totalPaid = contract.payments
+            const totalPaid = payments
                 .filter(payment => payment.date <= date)
                 .reduce((total, payment) => total + payment.amount, 0);
-            result = totalDebt - totalPaid;
+            result = {totalDebt:totalDebt - totalPaid};
         } catch (error) {
             result = { message: "Error calculating total debt",statusCode: 500};
             console.log(result.message, error);
