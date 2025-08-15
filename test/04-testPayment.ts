@@ -117,14 +117,9 @@ const payments:{
             .send(payments[1]);
         payments[1].id = createPayment02.body.id;
         expect(createPayment02.status).toBe(201);
-        console.log("////////////")
-        console.log(createPayment01.body)
-        console.log(createPayment02.body)
     })
 
     it("delete 2 payments", async () => {
-        console.log("////////////")
-        console.log(payments.map((item)=>item.id))
         const createPayment01 = await request(app)
             .delete(`/api/payment/${payments[0].id}`)
             .set("X-API-Key", config.API_KEY)
@@ -139,7 +134,6 @@ const payments:{
     })
 
     it("delete required entities", async () => {
-        console.log(contracts[0].id)
         const deleteContractResp = await request(app)
             .delete(`/api/contract/${contracts[0].id}`)
             .set("X-API-Key", config.API_KEY);
