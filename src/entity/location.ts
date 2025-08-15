@@ -1,7 +1,7 @@
-import { Entity, Column, BaseEntity, ManyToOne, OneToMany, ManyToMany, PrimaryGeneratedColumn } from "typeorm"
+import { Entity, Column, BaseEntity, ManyToOne, OneToMany, ManyToMany, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn, DeleteDateColumn } from "typeorm"
 import { Building } from "./building"
 import { Contract } from "./contract";
-import { Debt } from "./debt";
+import { ServiceDebts } from "./servicesDebt";
 
 export type locationStatus ="ACTIVE"|"INACTIVE"|
           "MAINTENANCE"|"CLOSED"| "RENOVATION"| 
@@ -20,15 +20,25 @@ export class Location extends BaseEntity {
   @Column({ type: "text", nullable: true, default: null })
   additionalInfo: string;
 
-  @ManyToOne(type => Building, building => building.locations) building: Building; 
 
-  @OneToMany(type => Contract, contract => contract.location) contracts: Contract[];  
+  // relations
+  @ManyToOne(type => Building, building => building.locations)
+  building: Building; 
+
+  @OneToMany(type => Contract, contract => contract.location)
+  contracts: Contract[];  
+
+  @OneToMany(type => Location, location => location.building, ) 
+  servicesDebts: ServiceDebts[];  
+
+  // updates
+  @CreateDateColumn()
+  created!: Date;
+
+  @UpdateDateColumn()
+  updated!: Date;
+
+  @DeleteDateColumn()
+  deletedAt?: Date;
   
-  @ManyToMany(
-  () => Debt,
-  debt => debt.locations,
-  {onDelete: 'NO ACTION', onUpdate: 'NO ACTION',},
-  )
-  debts?: Debt[];
-
 }

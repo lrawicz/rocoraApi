@@ -21,7 +21,7 @@ let locations:Partial<{id:number,name: string, buildingId: number,status:locatio
 let contracts:Partial<{
     id:number,
     tenant:string,
-    tenantDNI:number,
+    tenantDNI:string,
     startDate:Date,
     endDate:Date,
     sheduleAmount:taskAmount[],
@@ -32,7 +32,7 @@ let contracts:Partial<{
         {   
             //id: to be defined
             tenant:"John Doe",
-            tenantDNI:12345678,
+            tenantDNI:"12345678",
             startDate:new Date(2024,0,1),
             endDate:new Date(2025,11,31),
             sheduleAmount:[
@@ -115,7 +115,11 @@ describe("Contract API", () => {
         expect(getResponse.body.tenant).toBe(contracts[0].tenant);
         expect(getResponse.body.tenantDNI).toBe(contracts[0].tenantDNI);
     })
-    return ;
+    it("get Total Debt the contract", async () => {
+        const getDebt = await request(app)
+            .get(`/api/contract/getTotalDebt/${locations[0].id}`)
+            .set("X-API-Key", config.API_KEY)
+    })
     it("delete the contract", async () => {
         const deleteResponse = await request(app)
             .delete(`/api/contract/${contracts[0].id}`)

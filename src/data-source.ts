@@ -16,7 +16,7 @@ export const AppDataSource = new DataSource({
     database: (process.env.POSTGRES_DB || "dptosDB"),
     ssl: process.env.POSTGRES_SSL === "true" ? { rejectUnauthorized: false } : false,
     synchronize: true,
-    logging: true,
+    logging: process.env.NODE_ENV === "development",
     entities: [Building, Location,
         Contract, Payment, Debt
     ],

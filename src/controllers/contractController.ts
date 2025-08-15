@@ -53,11 +53,11 @@ export class ContractController {
         return res.status(200).json(result);
     }
     static async delete(req: Request, res: Response) {
-        const  id:number|undefined = Number(req.params.id)|| undefined;
-        if (!id) return res.status(400).json({ message: "Invalid contract ID" });
-        const result:boolean|ErrorType = await contractService.delete(id)
+        const  ids:number[] = (req.params.id as string).split(",").map(Number);
+        if (ids.length===0) return res.status(400).json({ message: "Invalid building ID" });
+        const result:boolean|ErrorType = await contractService.hardDelete(ids)
         if( typeof result !== "boolean") return res.status(result.statusCode).json({ message: result.message});
-        return res.status(200).json(result);
+        return res.status(204).json(result);
     }
 
     static async getActiveContracts(req: Request, res: Response) {

@@ -57,7 +57,54 @@ class ContractService extends baseService<Contract>{
                 return result;
             })
     }
+    public multiplyTaskAmount(task: taskAmount){
+        let result = [] as taskAmount[];
+        if(task.months<=0) return [];
+        if(task.months===1) return [task];
+        //expand task into multiple tasks of 1 month each
+        for (let index = 0; index < task.months-1; index++) {
+            const newTask:taskAmount = {amount:task.amount,startDate:new Date(task.startDate),months:1}
+            newTask.startDate.setMonth(newTask.startDate.getMonth()+index);
+            result.push(newTask);
+        }
+        return result;
+    }
+    /**
+     * @description Genera un listado de los pagos mensuales vencidos para todos los contratos.
+     * @param cutOffDate La fecha de corte para determinar los pagos vencidos (por defecto, la fecha actual).
+     * @returns Una promesa con un array de objetos que representan cada pago mensual vencido.
+     */
+    async  getVencimientosMensuales(contractId:number,cutOffDate: Date = new Date()): Promise<any[]> {
+        const result = await Contract
+            .createQueryBuilder('c')
+            .select([
+                'c.id AS "contractId"',
+                'c.tenant AS "tenantName"',
+                't.amount AS "monthlyAmount"',
+                't.payment_month AS "paymentMonth"'
+            ])
+            .from(subQuery => {
+                return subQuery
+                    .from(Contract, 'contract')
+                    .addSelect('contract.id', 'id')
+                    .addSelect(
+                        '(jsonb_array_elements("sheduleAmount")->>\'amount\')::numeric',
+                        'amount'
+                    )
+                    .addSelect(
+                        '((jsonb_array_elements("sheduleAmount")->>\'startDate\')::date + ' +
+                        '(jsonb_array_elements("sheduleAmount")->>\'months\')::integer * INTERVAL \'1 month\')',
+                        'payment_month'
+                    );
+            }, 't')
+            .where('c.id = t.id')
+            .andWhere('t.payment_month <= :cutOffDate', { cutOffDate })
+            .andWhere(`c.id = ${contractId}`)
+            .orderBy('c.id, t.payment_month')
+            .getRawMany();
 
+        return result;
+    }
     public async getTotalDebt(locationId:number, date:Date):Promise<{totalDebt:number}|ErrorType> {
         let result:{totalDebt:number}|ErrorType;
         try {
@@ -70,18 +117,7 @@ class ContractService extends baseService<Contract>{
             if(!payments)
                 return { message: "Payments not found",statusCode: 404};
             const totalDebt = contract.sheduleAmount
-                .map((task: taskAmount) => {
-                    let result = [] as taskAmount[];
-                    if(task.months<=0) return [];
-                    if(task.months===1) return [task];
-                    //expand task into multiple tasks of 1 month each
-                    for (let index = 0; index < task.months-1; index++) {
-                        const newTask:taskAmount = {amount:task.amount,startDate:new Date(task.startDate),months:1}
-                        newTask.startDate.setMonth(newTask.startDate.getMonth()+index);
-                        result.push(newTask);
-                    }
-                    return result;
-                })
+                .map(this.multiplyTaskAmount)
                 .flat()
                 .filter((task) => task.startDate <= (date))
                 .reduce((total, payment) => total + payment.amount, 0) || 0;

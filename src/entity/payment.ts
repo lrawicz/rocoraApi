@@ -1,4 +1,4 @@
-import { Entity, PrimaryGeneratedColumn, Column, BaseEntity, OneToMany, ManyToOne } from "typeorm"
+import { Entity, PrimaryGeneratedColumn, Column, BaseEntity, OneToMany, ManyToOne, CreateDateColumn, UpdateDateColumn, DeleteDateColumn } from "typeorm"
 import { Contract } from "./contract";
 
 @Entity()
@@ -6,11 +6,23 @@ export class Payment extends BaseEntity {
     @PrimaryGeneratedColumn()
     id: number
 
-    @Column()
+    @Column('date',{nullable: false})
     date: Date
     
-    @Column()
+    @Column('float',{nullable: false})
     amount: number
 
+    //relations
     @ManyToOne(type => Contract, contract => contract.payments) contract: Contract; 
+
+    //updates
+    @CreateDateColumn()
+    created!: Date;
+
+    @UpdateDateColumn()
+    updated!: Date;
+
+    @DeleteDateColumn()
+    deletedAt?: Date;
+    
 }

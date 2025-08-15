@@ -56,9 +56,9 @@ export class LocationController {
     }
     
     static async delete(req: Request, res: Response) {
-        const  id:number|undefined = Number(req.params.id)|| undefined;
-        if (!id) return res.status(400).json({ message: "Invalid building ID" });
-        const result:boolean|ErrorType = await locationService.delete(id);
+        const  ids:number[] = (req.params.id as string).split(",").map(Number);
+        if (ids.length===0) return res.status(400).json({ message: "Invalid building ID" });
+        const result:boolean|ErrorType = await locationService.hardDelete(ids);
         if(typeof result !=="boolean") return res.status(result.statusCode).json({ message: result.message});
         return res.status(204).send();
     }

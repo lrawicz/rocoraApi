@@ -1,4 +1,4 @@
-import { Entity, PrimaryGeneratedColumn, Column, BaseEntity, OneToMany, ManyToMany, JoinTable } from "typeorm"
+import { Entity, PrimaryGeneratedColumn, Column, BaseEntity, ManyToMany, JoinTable, CreateDateColumn, UpdateDateColumn, DeleteDateColumn } from "typeorm"
 import { Location } from "./location";
 
 @Entity()
@@ -7,29 +7,23 @@ export class Debt extends BaseEntity {
     id: number
 
     @Column()
-    serviceName: "AYSA"|"EDESUR"|"Metrogas"|"AGIP"|"Otro"
+    serviceName: "AYSA"|"EDESUR"|"Metrogas"|"AGIP"|"ServGen"
     
-    @ManyToMany(() => Location, 
-      location =>  location.debts, //optional
-      {onDelete: 'NO ACTION', onUpdate: 'NO ACTION'}
-    )
-    @JoinTable({
-      name: 'debts_locations', 
-      joinColumn: {
-        name: 'debt_id',
-        referencedColumnName: 'id',
-      },
-      inverseJoinColumn: {
-        name: 'location_name',
-        referencedColumnName: 'name',
-      },
-    })
-    locations?: Location[];
+    // @ManyToMany(() => Location, 
+    //   location =>  location.debts, //optional
+    //   {onDelete: 'NO ACTION', onUpdate: 'NO ACTION'}
+    // )
+    // @JoinTable({
+    //   name: 'debts_locations', 
+    //   joinColumn: {name: 'debt_id',referencedColumnName: 'id'},
+    //   inverseJoinColumn: {name: 'location_id', referencedColumnName: 'id'},
+    // })
+    // locations?: Location[];
 
     @Column()
     debt: number
 
-    @Column()
+    @Column('date')
     dueDate: Date
 
     @Column()
@@ -44,4 +38,13 @@ export class Debt extends BaseEntity {
     @Column('jsonb', { nullable: false, default: [] })
     tickets: JSON
 
+    @CreateDateColumn()
+    created!: Date;
+
+    @UpdateDateColumn()
+    updated!: Date;
+
+    @DeleteDateColumn()
+    deletedAt?: Date;
+    
 }

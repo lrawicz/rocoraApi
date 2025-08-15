@@ -41,7 +41,6 @@ class LocationService extends baseService<Location>{
             const building = await Building.findOne({ where: { id: data.buildingId } });
             if(!building){
                 const result:ErrorType = {message: "Building not found",statusCode: 404};
-                console.log(result.message);
                 return result;
             }
             delete data.buildingId;

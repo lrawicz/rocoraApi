@@ -70,7 +70,6 @@ export class baseService<T extends BaseEntity> {
                 message: `Error creating ${this.entityType.name}`,
                 statusCode: 500
             };
-            console.log(result.message);
             console.log(error);
         }
         return result;
@@ -79,9 +78,8 @@ export class baseService<T extends BaseEntity> {
         // @ts-ignore
         return await this.entityType.findOneOrFail({ where: { id } })
             .catch(error => {
-                console.log(`${this.entityType.name} not found`,error);
                 return {
-                    message: `${this.entityType.name} not found`,
+                    message: `${this.entityType.name} not found - ${error.name}`,
                     statusCode: 404
                 };
             })
@@ -100,10 +98,31 @@ export class baseService<T extends BaseEntity> {
             })
     }
     
-    public async delete(id: number): Promise<boolean|ErrorType> {
-        return await this.entityType.delete(id)
+    public async hardDelete(ids: number[]): Promise<boolean|ErrorType> {
+        return await this.entityType.delete(ids).then((data) => {
+            if(data.affected===ids.length){
+                return true;
+            }else{
+                const result:ErrorType = {message: `Se eliminaron ${data.affected} de un total de ${ids.length}`,statusCode: 404};
+                console.log(result.message);
+                return result;
+            }
+        }).catch(error=>{
+            const result:ErrorType = {message: `Error deleting ${this.entityType.name}s`,statusCode: 404};
+            console.log(result.message,error);
+            return result;
+        })
+    }
+    public async softDelete(ids: number[]): Promise<boolean|ErrorType> {
+        //@ts-ignore
+        const entities:T[] = await this.entityType.find({where:{id:In(ids)}})
+        if(!entities){
+            const result:ErrorType = {message: `Could not delete the ${this.entityType.name}s`,statusCode: 404};
+            return result;
+        }
+        return await this.entityType.softRemove(entities)
                 .then((data) => {
-                    if(data.affected===0){
+                    if(data.length===0){
                         const result:ErrorType = {message: `Could not delete the ${this.entityType.name}`,statusCode: 404};
                         return result;
                     }
