@@ -106,7 +106,7 @@ describe("Contract API", () => {
     })
     it("should update the contract", async () => {
         contracts[0].tenant = "Jane Smith";
-        contracts[0].tenantDNI = 87654321;
+        contracts[0].tenantDNI = "87654321";
         const getResponse = await request(app)
             .put(`/api/contract/${contracts[0].id}`)
             .set("X-API-Key", config.API_KEY)
