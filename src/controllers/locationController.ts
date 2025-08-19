@@ -12,7 +12,7 @@ export class LocationController {
             let limit = req.query.limit? Number(req.query.limit) : 10;
             if(page<1) page=1;
             if(limit<1) limit=10;
-            const result:Pagination<Location>|ErrorType = await locationService.getAll({page,limit});
+            const result:Pagination<Location>|ErrorType = await locationService.getAll({page,limit},["building"]);
             if('statusCode' in result) return res.status(result.statusCode).json({ message: result.message});
             return res.json(result);
         } catch (error) {

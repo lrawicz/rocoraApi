@@ -11,7 +11,7 @@ export class PaymentController {
             if(page<1) page=1;
             if(limit<1) limit=10;
             const options = req.query.options? JSON.parse(req.query.options as string) : undefined;
-            const result:Pagination<Payment>|ErrorType = await paymentService.getAll({page,limit});
+            const result:Pagination<Payment>|ErrorType = await paymentService.getAll({page,limit},["contract","contract.location"]);
             if('statusCode' in result) return res.status(result.statusCode).json({ message: result.message});
             return res.json(result);
         } catch (error) {

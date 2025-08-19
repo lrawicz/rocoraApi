@@ -1,6 +1,6 @@
 //base Service
 import { ErrorType, optionsGetAll, Pagination, parameterOption } from "../generalIntefaces";
-import {  LessThan, LessThanOrEqual, Like, MoreThan,MoreThanOrEqual,And, FindOperator, BaseEntity, Equal, In} from "typeorm";
+import {  LessThan, LessThanOrEqual, Like, MoreThan,MoreThanOrEqual,And, FindOperator, BaseEntity, Equal, In, FindManyOptions} from "typeorm";
 
 export class baseService<T extends BaseEntity> {
     entity:typeof BaseEntity;
@@ -10,7 +10,7 @@ export class baseService<T extends BaseEntity> {
     constructor(entityType: typeof BaseEntity & (new () => T)) {
         this.entityType = entityType;
     }
-    public async getAll(filter: optionsGetAll): Promise<Pagination<T> | ErrorType> {
+    public async getAll(filter: optionsGetAll,relations?:string[]): Promise<Pagination<any> | ErrorType> {
             if (filter.page < 1) filter.page = 1;
             if (filter.limit < 1) filter.limit = 10;
             if (filter.limit > 100) filter.limit = 100; // Limit to a maximum of 100 items per page
@@ -22,10 +22,10 @@ export class baseService<T extends BaseEntity> {
             };
             try {
                 const options:any = {}
-                const relations:any = {}
                 options.skip = (filter.page - 1) * filter.limit
                 options.take = filter.limit
                 options.where = {}
+                options.relations = relations
                 if(filter.parameterOptions) filter.parameterOptions.forEach((param:parameterOption,index:number)=>
                     {
                         switch(param.typeOf){
