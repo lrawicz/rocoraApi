@@ -2,7 +2,7 @@
 import request from "supertest";
 import  app  from "../src/app"; // Adjust the path to your app file
 import config from "../src/config/config";
-import { AppDataSource } from "../src/data-source";
+import AppDataSource from "../src/dataSource";
 import { beforeAll, afterAll, describe, it, expect } from '@jest/globals';
 import { locationStatus } from "../src/entity/location";
 import { taskAmount } from "../src/entity/contract";
@@ -98,7 +98,7 @@ const payments:{
         expect(createContract.body.endDate).toBe(contracts[0].endDate.toISOString());
         //expect(createResponse.body.sheduleAmount as taskAmount[]).toBe(contracts[0].sheduleAmount);
         expect(createContract.body.location.id).toBe(contracts[0].locationId);
-        expect(createContract.body.status).toBe("ACTIVE");
+        expect(createContract.body.status).toBe("ACTIVO");
     });
 
 

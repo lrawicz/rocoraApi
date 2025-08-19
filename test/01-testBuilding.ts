@@ -2,7 +2,7 @@
 import request from "supertest";
 import  app  from "../src/app"; // Adjust the path to your app file
 import config from "../src/config/config";
-import { AppDataSource } from "../src/data-source";
+import AppDataSource from "../src/dataSource";
 import { beforeAll, afterAll, describe, it, expect } from '@jest/globals';
 
 beforeAll(async () => {
