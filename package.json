@@ -9,7 +9,14 @@
     "start": "node dist/index.js",
     "dev": "cross-env NODE_ENV=development nodemon --watch 'src/**/*.ts' --exec 'ts-node' src/index.ts",
     "lint": "eslint . --ext .ts",
-    "lint:fix": "eslint . --ext .ts --fix"
+    "lint:fix": "eslint . --ext .ts --fix",
+    "typeorm": "typeorm-ts-node-commonjs",
+    "migrationUp": "typeorm-ts-node-commonjs migration:run -d ./src/dataSource.ts",
+    "migrationDown": "typeorm-ts-node-commonjs migration:revert -d ./src/dataSource.ts",
+    "migrationGenerate": "typeorm-ts-node-commonjs migration:create",
+    "seed": "typeorm-ts-node-commonjs seed:run -d ./src/dataSource.ts",
+    "swagger": "swagger-jsdoc -d ./src/swagger.json -o ./docs/swagger.json",
+    "swagger-ui": "swagger-ui-express -d ./docs/swagger.json"
   },
   "author": "",
   "license": "ISC",
@@ -36,6 +43,7 @@
     "jest": "^30.0.5",
     "supertest": "^7.1.4",
     "ts-jest": "^29.4.1",
+    "ts-node": "^10.9.2",
     "typescript": "^5.9.2"
   }
 }
