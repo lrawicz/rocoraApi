@@ -1,6 +1,6 @@
 import app from "./app";
 import config from "./config/config";
-import { AppDataSource } from "./data-source";
+import AppDataSource from "./dataSource";
 
 async function startServer() {
   try {
