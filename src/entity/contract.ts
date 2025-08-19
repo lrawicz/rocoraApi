@@ -7,7 +7,7 @@ export type taskAmount = {
     startDate: Date,
     months: number,
 }
-export type contractStatus = "ACTIVE" | "INACTIVE" | "CANCELLED";
+export type contractStatus = "ACTIVO"  | "VENCIDO" | "JUICIO";
 
 @Entity()
 export class Contract extends BaseEntity {
@@ -29,7 +29,7 @@ export class Contract extends BaseEntity {
     @Column('jsonb', { nullable: false, default: [] })
     sheduleAmount: taskAmount[];
 
-    @Column('enum',{nullable: true, default: "ACTIVE",enum:["ACTIVE","INACTIVE","CANCELLED"] })
+    @Column('enum',{nullable: true, default: "ACTIVO",enum:["ACTIVO" , "VENCIDO" , "JUICIO"] })
     status: contractStatus;
 
     //relations

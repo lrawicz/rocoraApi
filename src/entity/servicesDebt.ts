@@ -18,6 +18,9 @@ export class ServiceDebts extends BaseEntity {
     @Column('date')
     segundoVencimiento: Date
 
+    @Column({type:"enum",enum:["dueño","inquilino"]})
+    acargoDe: "dueño"|"inquilino"
+
     @ManyToOne(type => Location, location => location.servicesDebts) 
     location: Location
 

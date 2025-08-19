@@ -12,6 +12,8 @@ export class Payment extends BaseEntity {
     @Column('float',{nullable: false})
     amount: number
 
+    @Column({type:"enum", enum:["efectivo","transferencia"],default:"efectivo"})
+    type:"efectivo"|"transferencia"
     //relations
     @ManyToOne(type => Contract, contract => contract.payments) contract: Contract; 
 

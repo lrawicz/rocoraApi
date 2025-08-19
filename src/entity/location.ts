@@ -3,9 +3,7 @@ import { Building } from "./building"
 import { Contract } from "./contract";
 import { ServiceDebts } from "./servicesDebt";
 
-export type locationStatus ="ACTIVE"|"INACTIVE"|
-          "MAINTENANCE"|"CLOSED"| "RENOVATION"| 
-          "FOR_SALE" | "FOR_RENT" | "SOLD" |  "RENTED"
+export type locationStatus ="ALQUILADO"|"OFICINA"| "EN_REPARACIóN"| "A_LA_VENTA" | "DISPONIBLE_PARA_ALQUILAR" | "DEPOSITO" 
 @Entity()
 export class Location extends BaseEntity {
   @PrimaryGeneratedColumn()
@@ -14,7 +12,7 @@ export class Location extends BaseEntity {
   @Column({ type: "text", unique: true })
   name: string
 
-  @Column({ type: "enum", enum: ["ACTIVE", "INACTIVE", "MAINTENANCE", "CLOSED", "RENOVATION", "FOR_SALE", "FOR_RENT", "SOLD", "RENTED"], default: "ACTIVE" })
+  @Column({ type: "enum", enum: ["ALQUILADO","OFICINA", "EN_REPARACIóN", "A_LA_VENTA" , "DISPONIBLE_PARA_ALQUILAR","DEPOSITO" ], default: "ALQUILADO" })
   status: locationStatus
 
   @Column({ type: "text", nullable: true, default: null })
