@@ -1,7 +1,7 @@
 //routes for managing locations
 import { Router } from "express";
 import { LocationController } from "../controllers/locationController";
-import { apiKeyAuth } from "../middleware/auth";
+import { checkJwt } from "../middleware/checkJwt";
 
 const locationRouter = Router();
 
@@ -149,7 +149,7 @@ locationRouter.get("/:id", LocationController.getById);
  *       500:
  *         description: Error del servidor
  */
-locationRouter.post("/", apiKeyAuth, LocationController.create);
+locationRouter.post("/", checkJwt, LocationController.create);
 
 /**
  * @swagger
@@ -182,7 +182,7 @@ locationRouter.post("/", apiKeyAuth, LocationController.create);
  *       404:
  *         description: La ubicación no fue encontrada
  */
-locationRouter.put("/:id", apiKeyAuth, LocationController.update);
+locationRouter.put("/:id", checkJwt, LocationController.update);
 
 /**
  * @swagger
@@ -205,6 +205,6 @@ locationRouter.put("/:id", apiKeyAuth, LocationController.update);
  *       404:
  *         description: La ubicación no fue encontrada
  */
-locationRouter.delete("/:id", apiKeyAuth, LocationController.delete);
+locationRouter.delete("/:id", checkJwt, LocationController.delete);
 
 export { locationRouter };

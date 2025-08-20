@@ -1,7 +1,7 @@
 //routes for managing buildings
 import { Router } from "express";
 import { BuildingController } from "../controllers/buildingController";
-import { apiKeyAuth } from "../middleware/auth";
+import { checkJwt } from "../middleware/checkJwt";
 
 const buildingRouter = Router();
 
@@ -117,7 +117,7 @@ buildingRouter.get("/:id", BuildingController.getById);
  *       500:
  *         description: Error del servidor
  */
-buildingRouter.post("/", apiKeyAuth, BuildingController.create);
+buildingRouter.post("/", checkJwt, BuildingController.create);
 
 /**
  * @swagger
@@ -155,7 +155,7 @@ buildingRouter.post("/", apiKeyAuth, BuildingController.create);
  *       404:
  *         description: El edificio no fue encontrado
  */
-buildingRouter.put("/:id", apiKeyAuth, BuildingController.update);
+buildingRouter.put("/:id", checkJwt, BuildingController.update);
 
 /**
  * @swagger
@@ -178,6 +178,6 @@ buildingRouter.put("/:id", apiKeyAuth, BuildingController.update);
  *       404:
  *         description: El edificio no fue encontrado
  */
-buildingRouter.delete("/:id", apiKeyAuth, BuildingController.delete);
+buildingRouter.delete("/:id", checkJwt, BuildingController.delete);
 
 export { buildingRouter };

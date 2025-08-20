@@ -1,7 +1,7 @@
 //routes for managing contracts
 import { Router } from "express";
 import ContractController from "../controllers/contractController";
-import { apiKeyAuth } from "../middleware/auth";
+import { checkJwt } from "../middleware/checkJwt";
 
 const contractRouter = Router();
 
@@ -186,7 +186,7 @@ contractRouter.get("/:id", ContractController.getById);
  *       500:
  *         description: Error del servidor
  */
-contractRouter.post("/", apiKeyAuth, ContractController.create);
+contractRouter.post("/", checkJwt, ContractController.create);
 
 /**
  * @swagger
@@ -219,7 +219,7 @@ contractRouter.post("/", apiKeyAuth, ContractController.create);
  *       404:
  *         description: El contrato no fue encontrado
  */
-contractRouter.put("/:id", apiKeyAuth, ContractController.update);
+contractRouter.put("/:id", checkJwt, ContractController.update);
 
 /**
  * @swagger
@@ -242,7 +242,7 @@ contractRouter.put("/:id", apiKeyAuth, ContractController.update);
  *       404:
  *         description: El contrato no fue encontrado
  */
-contractRouter.delete("/:id", apiKeyAuth, ContractController.delete);
+contractRouter.delete("/:id", checkJwt, ContractController.delete);
 
 /**
  * @swagger

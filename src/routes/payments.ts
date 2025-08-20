@@ -1,7 +1,7 @@
 //routes for managing payments
 import { Router } from "express";
 import { PaymentController } from "../controllers/paymentController";
-import { apiKeyAuth } from "../middleware/auth";
+import { checkJwt } from "../middleware/checkJwt";
 
 const paymentRouter = Router();
 
@@ -123,7 +123,7 @@ paymentRouter.get("/:id", PaymentController.getById);
  *       500:
  *         description: Error del servidor
  */
-paymentRouter.post("/", apiKeyAuth, PaymentController.create);
+paymentRouter.post("/", checkJwt, PaymentController.create);
 
 /**
  * @swagger
@@ -156,7 +156,7 @@ paymentRouter.post("/", apiKeyAuth, PaymentController.create);
  *       404:
  *         description: El pago no fue encontrado
  */
-paymentRouter.put("/:id", apiKeyAuth, PaymentController.update);
+paymentRouter.put("/:id", checkJwt, PaymentController.update);
 
 /**
  * @swagger
@@ -179,6 +179,6 @@ paymentRouter.put("/:id", apiKeyAuth, PaymentController.update);
  *       404:
  *         description: El pago no fue encontrado
  */
-paymentRouter.delete("/:id", apiKeyAuth, PaymentController.delete);
+paymentRouter.delete("/:id", checkJwt, PaymentController.delete);
 
 export { paymentRouter };
