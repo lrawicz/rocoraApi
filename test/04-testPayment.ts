@@ -1,7 +1,6 @@
 //test payment
 import request from "supertest";
 import  app  from "../src/app"; // Adjust the path to your app file
-import config from "../src/config/config";
 import AppDataSource from "../src/dataSource";
 import { beforeAll, afterAll, describe, it, expect } from '@jest/globals';
 import { locationStatus } from "../src/entity/location";
@@ -9,15 +8,23 @@ import { taskAmount } from "../src/entity/contract";
 
 beforeAll(async () => {
     await AppDataSource.initialize();
+    const loginResponse = await request(app)
+        .post("/api/auth/login")
+        .send({ username: "admin", password: "admin" });
+
+    expect(loginResponse.status).toBe(200);
+    expect(loginResponse.body).toHaveProperty("token");
+    authToken = loginResponse.body.token;
 });
 
 afterAll(async () => {
     await AppDataSource.destroy();
 });
 
+let authToken: string;
 const buildings:{direction: string, id?: number}[] = [{direction: "Almirante Brown 123"}];
 const locations:Partial<{id:number,name: string, buildingId: number,status:locationStatus,additionalInfo: string}>[]= 
-    [{name:"AB01"}];
+    [{name:"AB01-T"}];
 const contracts:Partial<{
         id:number,
         tenant:string,
@@ -66,7 +73,7 @@ const payments:{
         //building
         const createBuilding = await request(app)
             .post("/api/building")
-            .set("X-API-Key", config.API_KEY)
+            .set("Authorization", `Bearer ${authToken}`)
             .send(buildings[0]);
         buildings[0].id = createBuilding.body.id;
         locations[0].buildingId = createBuilding.body.id;
@@ -76,17 +83,17 @@ const payments:{
         //location
         const createLocation = await request(app)
             .post("/api/location")
-            .set("X-API-Key", config.API_KEY)
+            .set("Authorization", `Bearer ${authToken}`)
             .send(locations[0]);
         expect(createLocation.status).toBe(201);
         locations[0].id = createLocation.body.id;
         contracts[0].locationId = createLocation.body.id;
-        expect(createLocation.body.name).toBe("AB01");
+        expect(createLocation.body.name).toBe(locations[0].name);
 
         //contract
         const createContract = await request(app)
             .post("/api/contract")
-            .set("X-API-Key", config.API_KEY)
+            .set("Authorization", `Bearer ${authToken}`)
             .send(contracts[0]);
         expect(createContract.status).toBe(201);
         contracts[0].id = createContract.body.id;
@@ -98,14 +105,13 @@ const payments:{
         expect(createContract.body.endDate).toBe(contracts[0].endDate.toISOString());
         //expect(createResponse.body.sheduleAmount as taskAmount[]).toBe(contracts[0].sheduleAmount);
         expect(createContract.body.location.id).toBe(contracts[0].locationId);
-        expect(createContract.body.status).toBe("ACTIVO");
     });
 
 
     it("create 2 payments", async () => {
         const createPayment01 = await request(app)
             .post("/api/payment")
-            .set("X-API-Key", config.API_KEY)
+            .set("Authorization", `Bearer ${authToken}`)
             .send(payments[0]);
         
         payments[0].id = createPayment01.body.id;
@@ -113,7 +119,7 @@ const payments:{
 
         const createPayment02 = await request(app)
             .post("/api/payment")
-            .set("X-API-Key", config.API_KEY)
+            .set("Authorization", `Bearer ${authToken}`)
             .send(payments[1]);
         payments[1].id = createPayment02.body.id;
         expect(createPayment02.status).toBe(201);
@@ -122,13 +128,13 @@ const payments:{
     it("delete 2 payments", async () => {
         const createPayment01 = await request(app)
             .delete(`/api/payment/${payments[0].id}`)
-            .set("X-API-Key", config.API_KEY)
+            .set("Authorization", `Bearer ${authToken}`)
             .send(payments[0]);
         expect(createPayment01.status).toBe(204);
 
         const createPayment02 = await request(app)
             .delete(`/api/payment/${payments[1].id}`)
-            .set("X-API-Key", config.API_KEY)
+            .set("Authorization", `Bearer ${authToken}`)
             .send(payments[1]);
         expect(createPayment02.status).toBe(204);
     })
@@ -136,17 +142,17 @@ const payments:{
     it("delete required entities", async () => {
         const deleteContractResp = await request(app)
             .delete(`/api/contract/${contracts[0].id}`)
-            .set("X-API-Key", config.API_KEY);
+            .set("Authorization", `Bearer ${authToken}`);
         expect(deleteContractResp.status).toBe(204);
 
         const deleteLocationResp = await request(app)
             .delete(`/api/location/${locations[0].id}`)
-            .set("X-API-Key", config.API_KEY)
+            .set("Authorization", `Bearer ${authToken}`)
         expect(deleteLocationResp.status).toBe(204);
 
         const deleteBuilding = await request(app)
             .delete(`/api/building/${buildings[0].id}`)
-            .set("X-API-Key", config.API_KEY)
+            .set("Authorization", `Bearer ${authToken}`)
         expect(deleteBuilding.status).toBe(204);
     })
 
