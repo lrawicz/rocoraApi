@@ -10,7 +10,7 @@ const AppDataSource = new DataSource({
     password: (process.env.POSTGRES_PASSWORD || "lean"),
     database: (process.env.POSTGRES_DB || "dptosDB"),
     ssl: process.env.POSTGRES_SSL === "true" ? { rejectUnauthorized: false } : false,
-    synchronize: true,
+    synchronize: false,
     logging: process.env.NODE_ENV === "development",
     entities: [
         'src/entity/**/*.ts',
