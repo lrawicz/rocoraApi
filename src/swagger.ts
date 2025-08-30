@@ -1,5 +1,5 @@
 import swaggerJSDoc from 'swagger-jsdoc';
-import config from './config/config';
+import settings from './config/settings';
 
 const swaggerDefinition = {
   openapi: '3.0.0',
@@ -10,7 +10,7 @@ const swaggerDefinition = {
   },
   servers: [
     {
-      url: `http://localhost:${config.PORT}/api`,
+      url: `http://localhost:${settings.PORT}/api`,
       description: 'Servidor de Desarrollo',
     },
     {

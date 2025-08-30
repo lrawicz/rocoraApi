@@ -1,7 +1,7 @@
 import  AppDataSource  from "../dataSource";
 import { User } from "../entity/User";
 import * as jwt from "jsonwebtoken";
-import config from "../config/config";
+import settings from "../config/settings";
 
 export class AuthService {
   private userRepository = AppDataSource.getRepository(User);
@@ -22,7 +22,7 @@ export class AuthService {
     // User authenticated, generate JWT
     const token = jwt.sign(
       { userId: user.id, username: user.username, role: user.role },
-      config.JWT_SECRET,
+      settings.JWT_SECRET,
       { expiresIn: "1h" }
     );
     return token;
