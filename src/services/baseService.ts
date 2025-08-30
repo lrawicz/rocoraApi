@@ -12,9 +12,9 @@ export class baseService<T extends BaseEntity> {
     constructor(entityType: typeof BaseEntity & (new () => T)) {
         this.entityType = entityType;
     }
-            if (filter.page < 1) filter.page = 1;
-            if (filter.limit < 1) filter.limit = 10;
     public async getAll(filter: optionsGetAll<T>,relations?:string[]): Promise<Pagination<any> | ErrorType> {
+            if (filter.page < 0) filter.page = 1;
+            if (filter.limit < 0) filter.limit = 10;
             if (filter.limit > 100) filter.limit = 100; // Limit to a maximum of 100 items per page
             const result: Pagination<T> = {
                 items: [],

@@ -9,8 +9,8 @@ export class ContractController {
         try {
             let page = req.query.page? Number(req.query.page) : 1;
             let limit = req.query.limit? Number(req.query.limit) : 10;
-            if(page<1) page=1;
-            if(limit<1) limit=10;
+            if(page<0) page=1;
+            if(limit<0) limit=10;
 
             const id:string|undefined = req.query.id? String(req.query.id) : undefined;
             const locationId:number[]|undefined = req.query.buildingId? String(req.query.buildingId).split(",").map(Number) : undefined;

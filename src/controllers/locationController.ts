@@ -8,10 +8,10 @@ import { ErrorType, optionsGetAll, Pagination } from "../generalIntefaces";
 export class LocationController {
     static async getAll(req: Request, res: Response) {
         try {
-            if(page<1) page=1;
-            if(limit<1) limit=10;
             let page:number = req.query.page? Number(req.query.page) : 1;
             let limit:number = req.query.limit? Number(req.query.limit) : 10;
+            if(page<0) page=1;
+            if(limit<0) limit=10;
             const id:string|undefined = req.query.id? String(req.query.id) : undefined;
             const name:string|undefined = req.query.name? String(req.query.name) : undefined;
             const status:string[]|undefined = req.query.status? String(req.query.status).split(",") : undefined;

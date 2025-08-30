@@ -9,10 +9,10 @@ export class BuildingController {
         try {
             let page:number = req.query.page? Number(req.query.page) : 1;
             let limit:number = req.query.limit? Number(req.query.limit) : 10;
-            if(page<1) page=1;
-            if(limit<1) limit=10;
             const direction:string|undefined = req.query.direction? String(req.query.direction) : undefined;
             const id:string|undefined = req.query.id? String(req.query.id) : undefined;
+            if(page<0) page=1;
+            if(limit<0) limit=10;
             const params:optionsGetAll<Building> = {
                 page,
                 limit,
