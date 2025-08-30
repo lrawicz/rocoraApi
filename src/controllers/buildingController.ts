@@ -2,7 +2,7 @@
 import { Request, Response } from "express";
 import { Building } from "../entity/building";
 import { buildingData,  buildingService } from "../services/buildingService";
-import { ErrorType, Pagination } from "../generalIntefaces";
+import { ErrorType, optionsGetAll, Pagination, parameterOption } from "../generalIntefaces";
 
 export class BuildingController {
     static async getAll(req: Request, res: Response) {
@@ -12,6 +12,25 @@ export class BuildingController {
             if(page<1) page=1;
             if(limit<1) limit=10;
             const result:Pagination<Building>|ErrorType = await buildingService.getAll({limit,page});
+            const direction:string|undefined = req.query.direction? String(req.query.direction) : undefined;
+            const id:string|undefined = req.query.id? String(req.query.id) : undefined;
+            const params:optionsGetAll<Building> = {
+                page,
+                limit,
+                parameterOptions: []
+            }
+            if(direction) params.parameterOptions?.push({
+                columnName: "direction",
+                typeOf: "string",
+                criteria: { like: direction }            
+            })
+            if(id) params.parameterOptions?.push({
+                columnName: "id",
+                typeOf: "number",
+                criteria: { value: id }
+            })
+
+            const result:Pagination<Building>|ErrorType = await buildingService.getAll(params);
             if('statusCode' in result) return res.status(result.statusCode).json({ message: result.message});
             return res.json(result);
         } catch (error) {

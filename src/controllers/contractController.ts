@@ -3,7 +3,7 @@ import { Request, Response } from "express";
 import { Contract } from "../entity/contract";
 import { In } from "typeorm";
 import { contractData,  contractService } from "../services/contractService";
-import { ErrorType, Pagination } from "../generalIntefaces";
+import { ErrorType, optionsGetAll, Pagination } from "../generalIntefaces";
 export class ContractController {
     static async getAll(req: Request, res: Response) {
         try {
@@ -11,8 +11,18 @@ export class ContractController {
             let limit = req.query.limit? Number(req.query.limit) : 10;
             if(page<1) page=1;
             if(limit<1) limit=10;
-            const options = req.query.options? JSON.parse(req.query.options as string) : undefined;
-            const result:Pagination<Contract>|ErrorType = await contractService.getAll({page,limit},["location"]);
+
+            const id:string|undefined = req.query.id? String(req.query.id) : undefined;
+            const locationId:number[]|undefined = req.query.buildingId? String(req.query.buildingId).split(",").map(Number) : undefined;
+            const params:optionsGetAll<Contract> = {
+                page,
+                limit,
+                parameterOptions: []
+            }
+            if(id) params.parameterOptions?.push({columnName: "id",typeOf: "number",criteria: { value: id }})
+            if(locationId) params.parameterOptions?.push({columnName: "location",typeOf: "entity",criteria: { in: locationId }})
+            console.log(params)
+            const result:Pagination<Contract>|ErrorType = await contractService.getAll(params,["location"]);
             if('statusCode' in result) return res.status(result.statusCode).json({ message: result.message});
             return res.json(result);
         } catch (error) {
@@ -22,7 +32,7 @@ export class ContractController {
     }
     
     static async create(req: Request, res: Response) {
-        const data:contractData = req.body? req.body as contractData : undefined;
+        const data:contractData|undefined = req.body? req.body as contractData : undefined;
         if(!data) return res.status(400).json({ message: "Invalid data" });
         const result:Contract|ErrorType = await contractService.create(data);
         if('statusCode' in result) return res.status(result.statusCode).json({ message: result.message});
@@ -47,7 +57,8 @@ export class ContractController {
     static async update(req: Request, res: Response) {
         const id:number|undefined = Number(req.params.id)|| undefined;
         if (!id) return res.status(400).json({ message: "Invalid contract ID" });
-        const data:Partial<contractData> = req.body? req.body as contractData : undefined;
+        const data:Partial<contractData>|undefined = req.body? req.body as contractData : undefined;
+        if(!data) return res.status(400).json({ message: "Invalid data" });
         let result:Contract|ErrorType = await contractService.update(id,data)
         if('statusCode' in result) return res.status(result.statusCode).json({ message: result.message});
         return res.status(200).json(result);

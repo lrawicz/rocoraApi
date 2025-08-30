@@ -1,18 +1,32 @@
 //location controller
 import { Request, Response } from "express";
 import { Location, locationStatus } from "../entity/location";
-import { Building } from "../entity/building";
+import { Building } from "../entity/building.js";
 import { locationData, locationService } from "../services/locationService";
-import { ErrorType, Pagination } from "../generalIntefaces";
+import { ErrorType, optionsGetAll, Pagination } from "../generalIntefaces";
 
 export class LocationController {
     static async getAll(req: Request, res: Response) {
         try {
-            let page = req.query.page? Number(req.query.page) : 1;
-            let limit = req.query.limit? Number(req.query.limit) : 10;
             if(page<1) page=1;
             if(limit<1) limit=10;
-            const result:Pagination<Location>|ErrorType = await locationService.getAll({page,limit},["building"]);
+            let page:number = req.query.page? Number(req.query.page) : 1;
+            let limit:number = req.query.limit? Number(req.query.limit) : 10;
+            const id:string|undefined = req.query.id? String(req.query.id) : undefined;
+            const name:string|undefined = req.query.name? String(req.query.name) : undefined;
+            const status:string[]|undefined = req.query.status? String(req.query.status).split(",") : undefined;
+            const buildingId:number[]|undefined = req.query.buildingId? String(req.query.buildingId).split(",").map(Number) : undefined;
+            const params:optionsGetAll<Location> = {
+                page,
+                limit,
+                parameterOptions: []
+            }
+            if(id) params.parameterOptions?.push({columnName: "id",typeOf: "number",criteria: { value: id }})
+            if(name) params.parameterOptions?.push({columnName: "name",typeOf: "string",criteria: { like: name }})
+            if(status) params.parameterOptions?.push({columnName: "status",typeOf: "enum",criteria: { in: status }})
+            if(buildingId) params.parameterOptions?.push({columnName: "building",typeOf: "entity",criteria: { in: buildingId }})
+
+            const result:Pagination<Location>|ErrorType = await locationService.getAll(params,["building"]);
             if('statusCode' in result) return res.status(result.statusCode).json({ message: result.message});
             return res.json(result);
         } catch (error) {
@@ -21,7 +35,8 @@ export class LocationController {
         }
     }
     static async create(req: Request, res: Response) {
-        const data:locationData = req.body? req.body as locationData : undefined;
+        const data:locationData|undefined = req.body? req.body as locationData : undefined;
+        if(!data) return res.status(400).json({ message: "Invalid data" });
         const result = await locationService.create(data);
         if(!result) return res.status(500).json({ message: "Error creating location" });
         if('statusCode' in result) return res.status(result.statusCode).json({ message: result.message});
@@ -48,7 +63,7 @@ export class LocationController {
     static async update(req: Request, res: Response) {
         const  id:number|undefined = Number(req.params.id)|| undefined;
         if (!id) return res.status(400).json({ message: "Invalid location ID" });
-        const data:Partial<locationData> = req.body? req.body as locationData : undefined;
+        const data:Partial<locationData>|undefined = req.body? req.body as locationData : undefined;
         if(!data) return res.status(400).json({ message: "Invalid data" });
         const result = await locationService.update(id, data);
         if('statusCode' in result) return res.status(result.statusCode).json({ message: result.message});
