@@ -14,7 +14,7 @@ export async function dataPaymentAB01_up(queryRunner: QueryRunner){
             ]
 
             '
-            WHERE id = ${this.contractID}`)
+            WHERE id = ${contractId}`)
         const payments:{date:string, amount:number}[]=[
             {date:'2023-01-05', amount:25000},
             {date:'2023-02-14', amount:25000},
