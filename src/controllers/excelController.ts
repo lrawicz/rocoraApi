@@ -70,13 +70,13 @@ try{
                 },{})
                 
                 
-            let result = [...deudas, ...pagos]
-                .sort((a,b)=>{
-                    let ADate = "startDate" in a? a.startDate:a.date;
-                    let BDate = "startDate" in b? b.startDate:b.date;
-                    return ADate>BDate?1:-1
-                })
-            res.json(result);
+            // let result = [...deudas] //...pagos]
+            //     .sort((a,b)=>{
+            //         let ADate = "startDate" in a? a.startDate:a.date;
+            //         let BDate = "startDate" in b? b.startDate:b.date;
+            //         return ADate>BDate?1:-1
+            //     })
+            // res.json(result);
         }catch{
             res.status(500).json({ message: "Error fetching data" });
         }
