@@ -21,7 +21,7 @@ export class PaymentController {
     }
     
     static async create(req: Request, res: Response) {
-        const data:paymentData = req.body? req.body as paymentData : undefined;
+        const data:paymentData|undefined = req.body? req.body as paymentData : undefined;
         if(!data) return res.status(400).json({ message: "Invalid data" });
         const result:Payment|ErrorType = await paymentService.create(data);
         if('statusCode' in result) return res.status(result.statusCode).json({ message: result.message});
@@ -38,7 +38,8 @@ export class PaymentController {
     static async update(req: Request, res: Response) {
         const id:number|undefined = Number(req.params.id)|| undefined;
         if (!id) return res.status(400).json({ message: "Invalid contract ID" });
-        const data:Partial<paymentData> = req.body? req.body as paymentData : undefined;
+        const data:Partial<paymentData>|undefined = req.body? req.body as paymentData : undefined;
+        if(!data) return res.status(400).json({ message: "Invalid data" });
         let result:Payment|ErrorType = await paymentService.update(id,data)
         if('statusCode' in result) return res.status(result.statusCode).json({ message: result.message});
         return res.status(200).json(result);
