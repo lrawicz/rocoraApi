@@ -14,11 +14,16 @@ const AppDataSource = new DataSource({
     synchronize: false,
     logging: process.env.NODE_ENV === "development",
     entities: [
-        'src/entity/**/*.ts',
+        __dirname +'/src/entity/**/*.ts',
     ],
     subscribers: [],
     migrations: [
-        'src/migration/**/*.ts',
+        __dirname + '/src/migration/**/*.ts',
     ],
+    extra: {
+        max:20,
+        idleTimeoutMillis: 0,
+        connectionTimeoutMillis: 2000,
+    }
 });
 export default AppDataSource;
