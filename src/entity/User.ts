@@ -1,6 +1,6 @@
 import { Entity, PrimaryGeneratedColumn, Column, BaseEntity } from "typeorm";
 import * as bcrypt from "bcryptjs";
-import config from "../config/config";
+import settings from "../config/settings";
 
 @Entity()
 export class User extends BaseEntity {
@@ -17,7 +17,7 @@ export class User extends BaseEntity {
   role!: string;
 
   async hashPassword(): Promise<void> {
-    this.password = await bcrypt.hash(this.password, config.SALT);
+    this.password = await bcrypt.hash(this.password, settings.SALT);
   }
 
   async checkPassword(password: string): Promise<boolean> {
