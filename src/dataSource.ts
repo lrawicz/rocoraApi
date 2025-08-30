@@ -1,15 +1,16 @@
 import { DataSource } from "typeorm";
 import dotenv from "dotenv";
+import settings from "./config/settings";
 dotenv.config();
 
 const AppDataSource = new DataSource({
     type: "postgres",
-    host: process.env.POSTGRES_LOCALHOST || "localhost",
-    port: (Number(process.env.POSTGRES_PORT) || 5432),
-    username: (process.env.POSTGRES_USER || "lean"),
-    password: (process.env.POSTGRES_PASSWORD || "lean"),
-    database: (process.env.POSTGRES_DB || "dptosDB"),
-    ssl: process.env.POSTGRES_SSL === "true" ? { rejectUnauthorized: false } : false,
+    host: settings.DB.HOST,
+    port: settings.DB.PORT,
+    username: settings.DB.USER,
+    password: settings.DB.PASSWORD,
+    database: settings.DB.DB_NAME,
+    ssl: settings.DB.SSL,
     synchronize: false,
     logging: process.env.NODE_ENV === "development",
     entities: [
