@@ -40,8 +40,8 @@ class ContractService extends baseService<Contract>{
                 };
                 return result;
             }
-            delete data.locationId
-            return await super.create({...data,location})  
+            data as Omit<contractData,"locationId">
+            return await super.create({...data ,location})  
         }
     
 

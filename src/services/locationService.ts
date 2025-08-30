@@ -22,8 +22,7 @@ class LocationService extends baseService<Location>{
             };
             return result;
         }
-        delete data.buildingId
-        return await super.create({...data,building})  
+        return await super.create({...(data as Omit<locationData,"buildingId">),building})  
     }
 
     public async getByName(name: string): Promise<Location | ErrorType> {
