@@ -74,7 +74,7 @@ class ContractService extends baseService<Contract>{
         if(task.months===1) return [task];
         //expand task into multiple tasks of 1 month each
         for (let index = 0; index < task.months-1; index++) {
-            const newTask:taskAmount = {amount:task.amount,startDate:new Date(task.startDate),months:1}
+            const newTask:taskAmount = {...task,startDate:new Date(task.startDate),months:1}
             newTask.startDate.setMonth(newTask.startDate.getMonth()+index);
             result.push(newTask);
         }
