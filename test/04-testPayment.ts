@@ -43,8 +43,8 @@ const contracts:Partial<{
             startDate:new Date(2024,0,1),
             endDate:new Date(2025,11,31),
             sheduleAmount:[
-                {amount:1000, startDate:new Date(2024,0,1), months:12},
-                {amount:1000, startDate:new Date(2025,0,1), months:12}
+                {amount:1000, startDate:new Date(2024,0,1), months:12,type:"escrito"},
+                {amount:1000, startDate:new Date(2025,0,1), months:12,type:"escrito"}
             ],
             //locationId: to be defined
         }
