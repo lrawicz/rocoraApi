@@ -1,5 +1,5 @@
 import app from "./app";
-import config from "./config/config";
+import settings from "./config/settings";
 import AppDataSource from "./dataSource";
 
 async function startServer() {
@@ -7,8 +7,8 @@ async function startServer() {
     await AppDataSource.initialize();
     console.log("Database connected successfully");
 
-    app.listen(config.PORT, () => {
-      console.log(`Server running at PORT: ${config.PORT}`);
+    app.listen(settings.PORT, () => {
+      console.log(`Server running at PORT: ${settings.PORT}`);
     });
   } catch (error) {
     console.error("Error starting the server:", error);

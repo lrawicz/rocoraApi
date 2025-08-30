@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from "express";
-import config from "../config/config";
+import settings from "../config/settings";
 
-const API_KEY = config.API_KEY;
+const API_KEY = settings.API_KEY;
 
 // Es una buena práctica verificar la clave al iniciar,
 // pero también lo haremos aquí por robustez.

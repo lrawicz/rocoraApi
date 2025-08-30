@@ -1,6 +1,6 @@
 import { MigrationInterface, QueryRunner, Table } from "typeorm";
 import * as bcrypt from "bcryptjs";
-import config from "../config/config";
+import settings from "../config/settings";
 
 export class AddUserEntity1755614529535 implements MigrationInterface {
   public async up(queryRunner: QueryRunner): Promise<void> {

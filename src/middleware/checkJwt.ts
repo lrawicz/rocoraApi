@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import * as jwt from "jsonwebtoken";
-import config from "../config/config";
+import settings from "../config/settings";
 
 interface AuthRequest extends Request {
   userId?: number;
@@ -12,7 +12,7 @@ export const checkJwt = (req: AuthRequest, res: Response, next: NextFunction) =>
   let jwtPayload;
 
   try {
-    jwtPayload = <any>jwt.verify(token, config.JWT_SECRET);
+    jwtPayload = <any>jwt.verify(token, settings.JWT_SECRET);
     req.userId = jwtPayload.userId;
     req.role = jwtPayload.role;
   } catch (error) {
@@ -20,7 +20,7 @@ export const checkJwt = (req: AuthRequest, res: Response, next: NextFunction) =>
   }
 
   const { userId, username, role } = jwtPayload;
-  const newToken = jwt.sign({ userId, username, role }, config.JWT_SECRET, { expiresIn: "1h" });
+  const newToken = jwt.sign({ userId, username, role }, settings.JWT_SECRET, { expiresIn: "1h" });
   res.setHeader("token", newToken);
 
   next();
