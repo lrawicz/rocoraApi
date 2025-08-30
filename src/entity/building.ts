@@ -4,14 +4,14 @@ import { Location } from "./location";
 @Entity()
 export class Building extends BaseEntity {
     @PrimaryGeneratedColumn()
-    id: number
+    id!: number
 
     @Column('text', { unique: true })
-    direction: string
+    direction!: string
 
     //relations
     @OneToMany(type => Location, location => location.building) 
-    locations: Location[];  
+    locations!: Location[];  
 
     //updates
 

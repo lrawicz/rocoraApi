@@ -6,38 +6,42 @@ export type taskAmount = {
     amount: number,
     startDate: Date,
     months: number,
+    type: "verbal" | "escrito"
 }
 export type contractStatus = "ACTIVO"  | "VENCIDO" | "JUICIO";
 
 @Entity()
 export class Contract extends BaseEntity {
     @PrimaryGeneratedColumn()
-    id: number
+    id!: number
 
     @Column('text',{nullable: false})
-    tenant: string
+    tenant!: string
 
     @Column('text',{nullable: false})
-    tenantDNI: string
+    tenantDNI!: string
 
     @Column('date',{nullable: false})
-    startDate: Date
+    startDate!: Date
 
     @Column('date',{nullable: false})
-    endDate: Date
+    endDate!: Date
+
+    @Column('boolean',{default: true})
+    escribanoPublico!: Boolean
 
     @Column('jsonb', { nullable: false, default: [] })
-    sheduleAmount: taskAmount[];
+    sheduleAmount!: taskAmount[];
 
     @Column('enum',{nullable: true, default: "ACTIVO",enum:["ACTIVO" , "VENCIDO" , "JUICIO"] })
-    status: contractStatus;
+    status!: contractStatus;
 
     //relations
     @ManyToOne(type => Location, location => location.contracts) 
-    location: Location; 
+    location!: Location; 
 
     @OneToMany(type => Payment, payment => payment.contract, ) 
-    payments: Payment[];
+    payments!: Payment[];
     
     //updates
     @CreateDateColumn()

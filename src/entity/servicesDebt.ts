@@ -4,28 +4,28 @@ import { Location } from "./location";
 @Entity()
 export class ServiceDebts extends BaseEntity {
     @PrimaryGeneratedColumn()
-    id: number
+    id!: number
 
     @Column('enum',{enum:["AYSA","EDESUR","Metrogas","AGIP","ServGen"]})
-    serviceName: "AYSA"|"EDESUR"|"Metrogas"|"AGIP"|"ServGen"
+    serviceName!: "AYSA"|"EDESUR"|"Metrogas"|"AGIP"|"ServGen"
 
     @Column('float')
-    debt: number
+    debt!: number
 
     @Column('date')
-    primerVencimiento: Date
+    primerVencimiento!: Date
 
     @Column('date')
-    segundoVencimiento: Date
+    segundoVencimiento!: Date
 
     @Column({type:"enum",enum:["dueño","inquilino"]})
-    acargoDe: "dueño"|"inquilino"
+    acargoDe!: "dueño"|"inquilino"
 
     @ManyToOne(type => Location, location => location.servicesDebts) 
-    location: Location
+    location!: Location
 
     @Column('enum', { enum: ["PENDING", "PAID", "OVERPAID"] })
-    status: "PENDING"|"PAID"|"OVERPAID"
+    status!: "PENDING"|"PAID"|"OVERPAID"
 
     @CreateDateColumn()
     created!: Date;

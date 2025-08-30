@@ -4,18 +4,18 @@ import { Contract } from "./contract";
 @Entity()
 export class Payment extends BaseEntity {
     @PrimaryGeneratedColumn()
-    id: number
+    id!: number
 
     @Column('date',{nullable: false})
-    date: Date
+    date!: Date
     
     @Column('float',{nullable: false})
-    amount: number
+    amount!: number
 
     @Column({type:"enum", enum:["efectivo","transferencia"],default:"efectivo"})
-    type:"efectivo"|"transferencia"
+    type!:"efectivo"|"transferencia"
     //relations
-    @ManyToOne(type => Contract, contract => contract.payments) contract: Contract; 
+    @ManyToOne(type => Contract, contract => contract.payments) contract!: Contract; 
 
     //updates
     @CreateDateColumn()

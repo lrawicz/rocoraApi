@@ -4,10 +4,10 @@ import { Location } from "./location";
 @Entity()
 export class Debt extends BaseEntity {
     @PrimaryGeneratedColumn()
-    id: number
+    id!: number
 
     @Column()
-    serviceName: "AYSA"|"EDESUR"|"Metrogas"|"AGIP"|"ServGen"
+    serviceName!: "AYSA"|"EDESUR"|"Metrogas"|"AGIP"|"ServGen"
     
     // @ManyToMany(() => Location, 
     //   location =>  location.debts, //optional
@@ -21,22 +21,22 @@ export class Debt extends BaseEntity {
     // locations?: Location[];
 
     @Column()
-    debt: number
+    debt!: number
 
     @Column('date')
-    dueDate: Date
+    dueDate!: Date
 
     @Column()
-    status: "PENDING"|"PAID"|"OVERPAID"
+    status!: "PENDING"|"PAID"|"OVERPAID"
 
     @Column('jsonb', { nullable: false, default: [] })
-    amountPaid: number
+    amountPaid!: number
 
     @Column()
-    totalAmountPayed: number
+    totalAmountPayed!: number
 
     @Column('jsonb', { nullable: false, default: [] })
-    tickets: JSON
+    tickets!: JSON
 
     @CreateDateColumn()
     created!: Date;
