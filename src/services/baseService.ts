@@ -5,7 +5,7 @@ import {  LessThan, Like, MoreThan, And, FindOperator, BaseEntity, Equal, In, Fi
 
 
 export class baseService<T extends BaseEntity> {
-    entity:typeof BaseEntity;
+    entity!:typeof BaseEntity;
     protected entityType: typeof BaseEntity & (new () => T);
 
     
