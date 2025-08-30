@@ -3,7 +3,7 @@
 import { Contract, contractStatus, taskAmount } from "../entity/contract";
 import { Location } from "../entity/location";
 import { Payment } from "../entity/payment";
-import { ErrorType} from "../generalIntefaces";
+import { ErrorType, optionsGetAll, Pagination} from "../generalIntefaces";
 import { baseService } from "./baseService";
 export type contractData ={
         locationId:number,
@@ -19,7 +19,18 @@ class ContractService extends baseService<Contract>{
     constructor(){
         super(Contract)
     }
+    public async getAll(filter: optionsGetAll<Contract>, relations?: string[]): Promise<Pagination<(Contract & {displayName:string})> | ErrorType> {
+        const contracts:Pagination<Contract> | ErrorType = await super.getAll(filter,relations)
+        if("statusCode" in contracts) return contracts
 
+        const contractsWithDisplayNames:(Contract & {displayName:string})[]= contracts.items.map((item:Contract)=>{
+            return {...item,displayName:`${item.location.name} - ${item.tenant}`} as (Contract & {displayName:string})
+        })
+        return {
+            ...contracts,
+            items: contractsWithDisplayNames
+        }
+    }
     public async create(data:contractData): Promise<Contract|ErrorType> {
             const location:Location|null = await Location.findOne({where:{id:data.locationId}})
             if(!location){
