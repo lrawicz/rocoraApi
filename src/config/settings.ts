@@ -13,7 +13,8 @@ const settings = {
         HOST: process.env.POSTGRES_HOST || "localhost",
         PORT: Number(process.env.POSTGRES_PORT) || 5432,
         SSL: process.env.POSTGRES_SSL === "true" ? { rejectUnauthorized: false } : false,
-    }
+    },
+    CORS_ORIGIN: process.env.CORS_ORIGIN?.split(",").map(item=>item.trim()) || "*" 
 }
 
 export default settings;
