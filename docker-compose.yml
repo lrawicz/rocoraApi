@@ -10,7 +10,7 @@ services:
     ports:
       - "5432:5432"
     volumes:
-      - postgres-miguel-vol:/var/lib/postgresql/data
+      - postgres-rocora-vol:/var/lib/postgresql/data
   rocora-api:
     build: .
     container_name: rocora_api
@@ -24,4 +24,4 @@ services:
     depends_on:
       - db
 volumes:
-  postgres-miguel-vol:
+  postgres-rocora-vol:
