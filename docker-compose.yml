@@ -12,7 +12,7 @@ services:
     volumes:
       - postgres-rocora-vol:/var/lib/postgresql/data
   rocora-api:
-    build: .
+    image: ghcr.io/lrawicz/rocora-api:latest
     container_name: rocora_api
     restart: always
     env_file:
